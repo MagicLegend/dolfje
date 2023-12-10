@@ -97,7 +97,7 @@ async function sendIM(client, userId, message) {
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
+    const j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
@@ -110,7 +110,7 @@ function postDelayed(client, channel, postArray, rePostArray = []) {
   rePostArray.push(row);
   client.chat.postMessage({
     token: process.env.SLACK_BOT_TOKEN,
-    channel: channel,
+    channel,
     blocks: [
       {
         type: 'section',
@@ -128,7 +128,7 @@ function postDelayed(client, channel, postArray, rePostArray = []) {
 
 function postNotVoted(client, channel, postArray) {
   const notVoteList = [];
-  const notVoteMessage = `Je hebt niet gestemd, stemmen is verplicht, als je twee keer niet stemt zonder afstemming zal de verteller je uit het spel halen; vergeet alsjeblieft volgende keer niet te stemmen!`;
+  const notVoteMessage = 'Je hebt niet gestemd, stemmen is verplicht, als je twee keer niet stemt zonder afstemming zal de verteller je uit het spel halen; vergeet alsjeblieft volgende keer niet te stemmen!';
   for (const player of postArray) {
     if (!player.hasVoted) {
       notVoteList.push(`<@${player.id}> (${player.missedVotes}x)`);
@@ -138,7 +138,7 @@ function postNotVoted(client, channel, postArray) {
   if (notVoteList.length) {
     client.chat.postMessage({
       token: process.env.SLACK_BOT_TOKEN,
-      channel: channel,
+      channel,
       blocks: [
         {
           type: 'section',

@@ -24,7 +24,7 @@ async function appMention({ message, say }) {
     token: process.env.SLACK_BOT_TOKEN,
     channel: message.channel,
     user: message.user,
-    text: `Hey stop met me @-mentionen, ik heb geen idee wat ik daar mee aan moet...`,
+    text: 'Hey stop met me @-mentionen, ik heb geen idee wat ik daar mee aan moet...',
   });
 }
 
@@ -57,7 +57,7 @@ async function startStemming({ message, say }) {
         },
       },
     ];
-    for (const channelChunk of chuckedUsersAlive)
+    for (const channelChunk of chuckedUsersAlive) {
       buttonblocks = buttonblocks.concat([
         {
           type: 'actions',
@@ -72,6 +72,7 @@ async function startStemming({ message, say }) {
           })),
         },
       ]);
+    }
 
     const chatMessage = await client.chat.postMessage({
       token: process.env.SLACK_BOT_TOKEN,
@@ -181,7 +182,7 @@ async function registerMessage({ message, say }) {
     const game = await queries.getGameWithChannel(message.channel);
     ingnoreSubtypes = ['channel_join', 'channel_leave', 'group_join', 'group_leave', 'bot_message', 'reminder_add'];
     if (message.user === 'USLACKBOT' || (message.subtype && ingnoreSubtypess.includes(message.subtype))) {
-      //ignore unimportant messages
+      // ignore unimportant messages
       return;
     }
     await queries.messageCountPlusPlus(message.user, game.gms_id);
@@ -204,7 +205,7 @@ async function registerMessage({ message, say }) {
       console.log(`Er ging iets mis met het opslaan van de message: ${error}`);
     }
   } catch (error) {
-    return;
+
   }
 }
 

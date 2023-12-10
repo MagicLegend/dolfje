@@ -1,7 +1,8 @@
+const { t } = require('localizify');
 const helpers = require('./ww_helpers');
 const queries = require('./ww_queries');
 const actions = require('./ww_actions');
-const { t } = require('localizify');
+
 module.exports = { addCommands };
 let client;
 
@@ -50,12 +51,11 @@ async function channelList({ command, ack, say }) {
     const playerList = await queries.getPlayerList(game.gms_id);
     const inputList = channelUsersList.filter((x) => playerList.map((y) => y.gpl_slack_id).includes(x.id));
 
-    let returnText;
     let seperator = ', ';
     if (command.text.trim() === 'newline') {
       seperator = '\n';
     }
-    returnText = `*${t('TEXTLIVING')}* (${
+    const returnText = `*${t('TEXTLIVING')}* (${
       inputList.filter((x) => x.status === t('TEXTPARTICIPANT') || x.status === t('TEXTMAYOR')).length
     }): ${inputList
       .filter((x) => x.status === t('TEXTPARTICIPANT') || x.status === t('TEXTMAYOR'))
@@ -244,7 +244,7 @@ async function startStemRonde({ command, ack, say }) {
         },
       },
     ];
-    for (const channelChunk of chuckedUsersAlive)
+    for (const channelChunk of chuckedUsersAlive) {
       buttonblocks = buttonblocks.concat([
         {
           type: 'actions',
@@ -259,6 +259,7 @@ async function startStemRonde({ command, ack, say }) {
           })),
         },
       ]);
+    }
     const message = await client.chat.postMessage({
       token: process.env.SLACK_BOT_TOKEN,
       channel: channelId,
@@ -399,7 +400,7 @@ async function startVluchtigeStemRonde({ command, ack, say }) {
         },
       },
     ];
-    for (const channelChunk of chuckedUsersAlive)
+    for (const channelChunk of chuckedUsersAlive) {
       buttonblocks = buttonblocks.concat([
         {
           type: 'actions',
@@ -414,6 +415,7 @@ async function startVluchtigeStemRonde({ command, ack, say }) {
           })),
         },
       ]);
+    }
     buttonblocks.push({
       type: 'actions',
       elements: [
@@ -423,8 +425,8 @@ async function startVluchtigeStemRonde({ command, ack, say }) {
             type: 'plain_text',
             text: `${t('TEXTCLOSEQUICKVOTE')}`,
           },
-          value: `sluit`,
-          action_id: `vluchtig-sluit`,
+          value: 'sluit',
+          action_id: 'vluchtig-sluit',
         },
       ],
     });
@@ -612,7 +614,7 @@ async function startSpel({ command, ack, say }) {
       let returnText = [];
       const usersList = await helpers.getUserlist(client, hoofdkanaal.channel.id);
       for (i = 0; i < result.playerList.length; i++) {
-        let temp = usersList.filter((y) => y.id == result.playerList[i].gpl_slack_id);
+        const temp = usersList.filter((y) => y.id == result.playerList[i].gpl_slack_id);
         returnText += `${temp[0].name}\n`;
       }
       await client.chat.postMessage({
@@ -677,7 +679,7 @@ async function stopSpel({ command, ack, say }) {
           },
         },
       ];
-      for (const channelChunk of chuckedChannels)
+      for (const channelChunk of chuckedChannels) {
         buttonblocks = buttonblocks.concat([
           {
             type: 'actions',
@@ -692,6 +694,7 @@ async function stopSpel({ command, ack, say }) {
             })),
           },
         ]);
+      }
       await client.chat.postMessage({
         token: process.env.SLACK_BOT_TOKEN,
         channel: channelId,
@@ -730,7 +733,7 @@ async function createChannel({ command, ack, say }) {
         token: process.env.SLACK_BOT_TOKEN,
         users: command.user_id,
       });
-      let buttonElements = [
+      const buttonElements = [
         {
           type: 'button',
           text: {
@@ -752,7 +755,7 @@ async function createChannel({ command, ack, say }) {
           action_id: `kanaal-${game.gms_id}`,
         });
       }
-      let buttonblocks = [
+      const buttonblocks = [
         {
           type: 'section',
           text: {
@@ -784,7 +787,7 @@ async function dood({ command, ack, say }) {
     const game = await queries.getActiveGameWithChannel(command.channel_id);
     const params = command.text.trim().split(' ');
     if (!(await queries.isVerteller(game.gms_id, command.user_id))) {
-      const warning = `TEXTKILLPEOPLE`;
+      const warning = 'TEXTKILLPEOPLE';
       await helpers.sendIM(client, command.user_id, warning);
       return;
     }
@@ -878,7 +881,7 @@ async function extraVerteller({ command, ack, say }) {
         token: process.env.SLACK_BOT_TOKEN,
         users: command.user_id,
       });
-      let buttonElements = [
+      const buttonElements = [
         {
           type: 'button',
           text: {
@@ -900,7 +903,7 @@ async function extraVerteller({ command, ack, say }) {
           action_id: `verteller-${game.gms_id}`,
         });
       }
-      let buttonblocks = [
+      const buttonblocks = [
         {
           type: 'section',
           text: {
@@ -993,7 +996,7 @@ async function ikDoeMee({ command, ack, say }) {
         token: process.env.SLACK_BOT_TOKEN,
         users: command.user_id,
       });
-      let buttonElements = [
+      const buttonElements = [
         {
           type: 'button',
           text: {
@@ -1015,7 +1018,7 @@ async function ikDoeMee({ command, ack, say }) {
           action_id: `inschrijven-${game.gms_id}`,
         });
       }
-      let buttonblocks = [
+      const buttonblocks = [
         {
           type: 'section',
           text: {
@@ -1052,7 +1055,7 @@ async function ikKijkMee({ command, ack, say }) {
         token: process.env.SLACK_BOT_TOKEN,
         users: command.user_id,
       });
-      let buttonElements = [
+      const buttonElements = [
         {
           type: 'button',
           text: {
@@ -1074,7 +1077,7 @@ async function ikKijkMee({ command, ack, say }) {
           action_id: `meekijken-${game.gms_id}`,
         });
       }
-      let buttonblocks = [
+      const buttonblocks = [
         {
           type: 'section',
           text: {
@@ -1115,7 +1118,7 @@ async function ikDoeNietMeerMee({ command, ack, say }) {
         token: process.env.SLACK_BOT_TOKEN,
         users: command.user_id,
       });
-      let buttonElements = [
+      const buttonElements = [
         {
           type: 'button',
           text: {
@@ -1137,7 +1140,7 @@ async function ikDoeNietMeerMee({ command, ack, say }) {
           action_id: `uitschrijven-${game.gms_id}`,
         });
       }
-      let buttonblocks = [
+      const buttonblocks = [
         {
           type: 'section',
           text: {
@@ -1194,7 +1197,7 @@ async function verdeelRollen({ command, ack, say }) {
     helpers.shuffle(playersAlive);
     let neededRoles = playersAlive.length;
     let playerIndex = 0;
-    let optionals = [];
+    const optionals = [];
 
     for (const rol of params) {
       const rolNaam = rol.split(':')[0];
@@ -1319,20 +1322,18 @@ async function summarize({ command, ack, say }) {
     }
     if (params.length < 2) {
       params[1] = params[0];
-    } else {
-      if (regex.exec(params[1]) === null) {
-        throw 'Date is invalid, format is yyyy-mm-dd';
-      }
+    } else if (regex.exec(params[1]) === null) {
+      throw 'Date is invalid, format is yyyy-mm-dd';
     }
 
     const threads = await queries.threatIdsInChannelByDate(command.channel_id, params[0], params[1]);
     const threadIds = threads.map((x) => x.gpm_thread_ts);
-    let ids = JSON.stringify(threadIds);
+    const ids = JSON.stringify(threadIds);
 
     const ntMessages = await queries.nonThreadedMessagesInChannelByDate(command.channel_id, params[0], params[1]);
     let tMessages = {};
 
-    let summary = [];
+    const summary = [];
     let lastUser = null;
     let lastTime = new Date(0);
     let newTime = null;
@@ -1371,12 +1372,12 @@ async function summarize({ command, ack, say }) {
       // If the post contains an image, write a link to that message
       if (message.gpm_files !== null) {
         try {
-          let files = JSON.parse(message.gpm_files);
+          const files = JSON.parse(message.gpm_files);
           for (file of files) {
             summary.push(file);
           }
         } catch (err) {
-          //not a valid JSON try backup strat
+          // not a valid JSON try backup strat
           try {
             summary.push({
               type: 'section',

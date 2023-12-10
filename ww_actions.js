@@ -8,9 +8,9 @@ module.exports = {
   createNewChannelFunction,
 };
 
-let helpers = require('./ww_helpers');
-const queries = require('./ww_queries');
 const { t } = require('localizify');
+const helpers = require('./ww_helpers');
+const queries = require('./ww_queries');
 
 const channelType = {
   main: 'MAIN',
@@ -84,8 +84,8 @@ async function vluchtigClick({ body, ack, say }) {
     if (votedOn !== 'sluit') {
       for (const stemmen in vluchtigeStemmingen[body.message.ts]) {
         if (
-          vluchtigeStemmingen[body.message.ts][stemmen].length &&
-          vluchtigeStemmingen[body.message.ts][stemmen].includes(user)
+          vluchtigeStemmingen[body.message.ts][stemmen].length
+          && vluchtigeStemmingen[body.message.ts][stemmen].includes(user)
         ) {
           vluchtigeStemmingen[body.message.ts][stemmen].splice(
             vluchtigeStemmingen[body.message.ts][stemmen].indexOf(user),
@@ -107,7 +107,7 @@ async function vluchtigClick({ body, ack, say }) {
       chuckedUsersAlive.push(playersAlive.splice(0, 5));
     }
 
-    let buttonblocks = [
+    const buttonblocks = [
       {
         type: 'section',
         text: {
@@ -125,7 +125,7 @@ async function vluchtigClick({ body, ack, say }) {
         },
       });
     } else {
-      for (const channelChunk of chuckedUsersAlive)
+      for (const channelChunk of chuckedUsersAlive) {
         buttonblocks.push({
           type: 'actions',
           elements: channelChunk.map((x) => ({
@@ -138,6 +138,7 @@ async function vluchtigClick({ body, ack, say }) {
             action_id: `vluchtig-${x.user_id}`,
           })),
         });
+      }
 
       buttonblocks.push({
         type: 'actions',
@@ -146,10 +147,10 @@ async function vluchtigClick({ body, ack, say }) {
             type: 'button',
             text: {
               type: 'plain_text',
-              text: `sluit vluchtige stemming`,
+              text: 'sluit vluchtige stemming',
             },
             value: 'sluit',
-            action_id: `vluchtig-sluit`,
+            action_id: 'vluchtig-sluit',
           },
         ],
       });
@@ -249,7 +250,7 @@ async function inschrijvenFunction(userId, gameId, msgChannelId, msgTs, singleGa
     if (!singleGame) {
       const games = await queries.getGameRegisterUser(userId);
       if (games.length > 0) {
-        let buttonElements = [
+        const buttonElements = [
           {
             type: 'button',
             text: {
@@ -271,7 +272,7 @@ async function inschrijvenFunction(userId, gameId, msgChannelId, msgTs, singleGa
             action_id: `inschrijven-${game.gms_id}`,
           });
         }
-        let buttonblocks = [
+        const buttonblocks = [
           {
             type: 'section',
             text: {
@@ -354,28 +355,28 @@ async function meekijkenFunction(userId, gameId, msgChannelId, msgTs, singleGame
           ],
         });
 
-        //invite player to main channel
+        // invite player to main channel
         const mainId = await queries.getChannel(game.gms_id, channelType.main);
         await client.conversations.invite({
           token: process.env.SLACK_BOT_TOKEN,
           channel: mainId,
           users: userId,
         });
-        //invite player to stemhok
+        // invite player to stemhok
         const voteId = await queries.getChannel(game.gms_id, channelType.vote);
         await client.conversations.invite({
           token: process.env.SLACK_BOT_TOKEN,
           channel: voteId,
           users: userId,
         });
-        //invite player to sectators
+        // invite player to sectators
         const sectatorId = await queries.getChannel(game.gms_id, channelType.viewer);
         await client.conversations.invite({
           token: process.env.SLACK_BOT_TOKEN,
           channel: sectatorId,
           users: userId,
         });
-        //send IM to vertellers
+        // send IM to vertellers
         const vertellerMessage = `${t('TEXTVIEWERJOINED')} ${userName}`;
         const vertellers = await queries.getVertellers(game.gms_id);
         for (const verteller of vertellers) {
@@ -389,7 +390,7 @@ async function meekijkenFunction(userId, gameId, msgChannelId, msgTs, singleGame
         const games = await queries.getGameOpenUser(userId);
 
         if (games.length > 0) {
-          let buttonElements = [
+          const buttonElements = [
             {
               type: 'button',
               text: {
@@ -411,7 +412,7 @@ async function meekijkenFunction(userId, gameId, msgChannelId, msgTs, singleGame
               action_id: `meekijken-${singleGame.gms_id}`,
             });
           }
-          let buttonblocks = [
+          const buttonblocks = [
             {
               type: 'section',
               text: {
@@ -492,7 +493,7 @@ async function uitschrijvenFunction(userId, gameId, msgChannelId, msgTs, singleG
       if (!singleGame) {
         const games = await queries.getGameUnregisterUser(userId);
         if (games.length > 0) {
-          let buttonElements = [
+          const buttonElements = [
             {
               type: 'button',
               text: {
@@ -514,7 +515,7 @@ async function uitschrijvenFunction(userId, gameId, msgChannelId, msgTs, singleG
               action_id: `uitschrijven-${game.gms_id}`,
             });
           }
-          let buttonblocks = [
+          const buttonblocks = [
             {
               type: 'section',
               text: {
@@ -605,7 +606,7 @@ async function vertellerToevoegenFunction(vertellerId, userId, mainChannel, game
     if (!singleGame) {
       const games = await queries.getGameVerteller(userId, vertellerId);
       if (games.length > 0) {
-        let buttonElements = [
+        const buttonElements = [
           {
             type: 'button',
             text: {
@@ -627,7 +628,7 @@ async function vertellerToevoegenFunction(vertellerId, userId, mainChannel, game
             action_id: `verteller-${game.gms_id}`,
           });
         }
-        let buttonblocks = [
+        const buttonblocks = [
           {
             type: 'section',
             text: {

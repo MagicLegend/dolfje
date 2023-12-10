@@ -82,7 +82,7 @@ const pollStates = {
 async function getLastGameName() {
   try {
     const gameName = await promisePool.query(
-      `SELECT gms_name FROM games WHERE gms_id = (SELECT MAX(gms_id) FROM games)`
+      'SELECT gms_name FROM games WHERE gms_id = (SELECT MAX(gms_id) FROM games)'
     );
     return gameName[0];
   } catch (err) {
@@ -191,7 +191,9 @@ async function startGame(gameId, maxPlayers) {
       AND gpl.gpl_status = ?`,
       [gameId, gameStates.registering, playerStates.alive]
     );
-    return { succes: true, playerList: rows, viewerList: rows2, vertellerList: rows3 };
+    return {
+      succes: true, playerList: rows, viewerList: rows2, vertellerList: rows3
+    };
   } catch (err) {
     console.log(err);
     return { succes: false, error: err };
@@ -229,7 +231,7 @@ async function joinGame(gameId, userId, userName) {
         [playerStates.alive, gameId, userId]
       );
 
-      let [rows] = await promisePool.query(
+      const [rows] = await promisePool.query(
         `select
         sum(case when gpl_status in ('DEAD', 'ALIVE') then 1 else 0 end) numberOfPlayers,
         sum(case when gpl_status in ('VIEWER') then 1 else 0 end) numberOfViewers
@@ -246,7 +248,7 @@ async function joinGame(gameId, userId, userName) {
       [gameId, userId, userName, playerStates.alive, false, false, false, 0]
     );
 
-    let [rows] = await promisePool.query(
+    const [rows] = await promisePool.query(
       `select
         sum(case when gpl_status in ('DEAD', 'ALIVE') then 1 else 0 end) numberOfPlayers,
         sum(case when gpl_status in ('VIEWER') then 1 else 0 end) numberOfViewers
@@ -280,7 +282,7 @@ async function viewGame(userId, userName, gameId) {
             and gpl_slack_id = ?`,
         [playerStates.viewer, gameId, userId]
       );
-      let [rows] = await promisePool.query(
+      const [rows] = await promisePool.query(
         `select 
           sum(case when gpl_status in ('DEAD', 'ALIVE') then 1 else 0 end) numberOfPlayers,
           sum(case when gpl_status in ('VIEWER') then 1 else 0 end) numberOfViewers
@@ -296,7 +298,7 @@ async function viewGame(userId, userName, gameId) {
         values (?,?,?,?,?,?,?,?)`,
       [gameId, userId, userName, playerStates.viewer, false, false, false, 0]
     );
-    let [rows] = await promisePool.query(
+    const [rows] = await promisePool.query(
       `select 
         sum(case when gpl_status in ('DEAD', 'ALIVE') then 1 else 0 end) numberOfPlayers,
         sum(case when gpl_status in ('VIEWER') then 1 else 0 end) numberOfViewers
@@ -319,7 +321,7 @@ async function leaveGame(gameId, userId) {
        and gpl_slack_id = ?`,
       [gameId, userId]
     );
-    let [rows] = await promisePool.query(
+    const [rows] = await promisePool.query(
       `select 
         sum(case when gpl_status in ('DEAD', 'ALIVE') then 1 else 0 end) numberOfPlayers,
         sum(case when gpl_status in ('VIEWER') then 1 else 0 end) numberOfViewers
@@ -872,7 +874,9 @@ async function getPoll(gmsId) {
     [gmsId]
   );
   if (rows.length !== 1) {
-    return { gpo_gms_id: gmsId, gpo_number: 0, gpo_status: pollStates.closed, gpo_slack_message_id: null };
+    return {
+      gpo_gms_id: gmsId, gpo_number: 0, gpo_status: pollStates.closed, gpo_slack_message_id: null
+    };
   }
   return rows[0];
 }
@@ -888,7 +892,7 @@ async function logChannel(logInput) {
 
 async function getChannel(gameId, channelType) {
   const [rows] = await promisePool.query(
-    `select gch_slack_id from game_channels where gch_gms_id = ? and gch_type = ?`,
+    'select gch_slack_id from game_channels where gch_gms_id = ? and gch_type = ?',
     [gameId, channelType]
   );
   return rows[0].gch_slack_id;
@@ -896,7 +900,7 @@ async function getChannel(gameId, channelType) {
 
 async function logArchiveChannel(channelId) {
   try {
-    await promisePool.query(`update game_channels set gch_archived = TRUE WHERE gch_slack_id = ?`, [channelId]);
+    await promisePool.query('update game_channels set gch_archived = TRUE WHERE gch_slack_id = ?', [channelId]);
   } catch (error) {
     console.log(error);
   }
@@ -906,7 +910,7 @@ async function getAllChannels(gameId) {
   const [
     rows,
   ] = await promisePool.query(
-    `select gch_slack_id, gch_name from game_channels where gch_gms_id = ? and !gch_archived`,
+    'select gch_slack_id, gch_name from game_channels where gch_gms_id = ? and !gch_archived',
     [gameId]
   );
   return rows;
@@ -914,7 +918,7 @@ async function getAllChannels(gameId) {
 
 async function storeMessage(channelId, userId, ts, blocks, files, threatTs) {
   // Get channel type
-  const [rows] = await promisePool.query(`select gch_gms_id, gch_type from game_channels where gch_slack_id = ?`, [
+  const [rows] = await promisePool.query('select gch_gms_id, gch_type from game_channels where gch_slack_id = ?', [
     channelId,
   ]);
   if (rows.length == 0) {
@@ -933,8 +937,8 @@ async function storeMessage(channelId, userId, ts, blocks, files, threatTs) {
 
 async function threatIdsInChannelByDate(channelId, startDate, endDate) {
   // Time
-  const dateStart = startDate + ' 00:00:00';
-  const dateEnd = endDate + ' 23:59:59';
+  const dateStart = `${startDate} 00:00:00`;
+  const dateEnd = `${endDate} 23:59:59`;
 
   // Get thread IDs
   const [rows] = await promisePool.query(
@@ -949,8 +953,8 @@ async function threatIdsInChannelByDate(channelId, startDate, endDate) {
 
 async function nonThreadedMessagesInChannelByDate(channelId, startDate, endDate) {
   // Time
-  const dateStart = startDate + ' 00:00:00';
-  const dateEnd = endDate + ' 23:59:59';
+  const dateStart = `${startDate} 00:00:00`;
+  const dateEnd = `${endDate} 23:59:59`;
 
   //
   const [rows] = await promisePool.query(
