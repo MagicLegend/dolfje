@@ -2,4 +2,5 @@
 *.zip
 !/.gitignore
 !/.prettierrc
+!/.eslintrc.json
 node_modules
